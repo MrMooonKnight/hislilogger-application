@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CyphraGuard</title>
+    <style>
+        body,
+        canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    .topnav {
+        overflow: hidden;
+        background-color: black; /* Grayish color to match theme */
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .topnav a {
+        float: left;
+        color: white; /* White color to match theme */
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+        transition: color 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease;
+    }
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+        border-radius: 10px; /* Rounded corners */
+    }
+    .topnav a.active {
+        background-color: #eb3105;
+        color: white;
+        border-radius: 10px; /* Rounded corners */
+    }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            font-family: 'Brush Script MT', cursive;
+            margin-right: auto; /* Align the logo text to the left */
+            padding: 14px 16px;
+        }
+        .content {
+            position: absolute; /* Ensure it sits above the canvas */
+            z-index: 2; /* Ensure it sits above the canvas */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* Make sure it doesn't block the animation */
+        }
+        .content img {
+            max-width: 50%; /* Adjust this value as needed */
+            height: auto;
+        }
+        canvas {
+            z-index: 1; /* Ensure the canvas is below the logo */
+        }
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+    <div class="logo">CyphraGuard</div>
+    <a href="{{ url_for('faheem') }}"></a>
+    <a class="active" href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('windows') }}">Windows</a>
+    <a href="{{ url_for('linux') }}">Linux</a>
+    <a href="{{ url_for('view_clients') }}">View Clients</a>
+    <a href="{{ url_for('about') }}">About</a>
+</div>
+
+<div class="content">
+    <img src="{{ url_for('static', filename='cyphra.png') }}" alt="CyphraGuard Logo">
+</div>
+
+<script>
+    var maxx = document.body.clientWidth;
+    var maxy = document.body.clientHeight;
+    var halfx = maxx / 2;
+    var halfy = maxy / 2;
+    var canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+    canvas.width = maxx;
+    canvas.height = maxy;
+    var context = canvas.getContext("2d");
+    var dotCount = 200;
+    var dots = [];
+    // create dots
+    for (var i = 0; i < dotCount; i++) {
+        dots.push(new dot());
+    }
+
+    // dots animation
+    function render() {
+        context.fillStyle = "#000000";
+        context.fillRect(0, 0, maxx, maxy);
+        for (var i = 0; i < dotCount; i++) {
+            dots[i].draw();
+            dots[i].move();
+        }
+        requestAnimationFrame(render);
+    }
+
+    // dots class
+    // @constructor
+    function dot() {
+        this.rad_x = 2 * Math.random() * halfx + 1;
+        this.rad_y = 1.2 * Math.random() * halfy + 1;
+        this.alpha = Math.random() * 360 + 1;
+        this.speed = Math.random() * 100 < 50 ? 1 : -1;
+        this.speed *= 0.1;
+        this.size = Math.random() * 5 + 1;
+        this.color = Math.floor(Math.random() * 256);
+    }
+
+    // drawing dot
+    dot.prototype.draw = function() {
+        // calc polar coord to decart
+        var dx = halfx + this.rad_x * Math.cos(this.alpha / 180 * Math.PI);
+        var dy = halfy + this.rad_y * Math.sin(this.alpha / 180 * Math.PI);
+        // set color
+        context.fillStyle = "rgb(" + this.color + "," + this.color + "," + this.color + ")";
+        // draw dot
+        context.fillRect(dx, dy, this.size, this.size);
+    };
+
+    // calc new position in polar coord
+dot.prototype.move = function() {
+        this.alpha += this.speed;
+        // change color
+        if (Math.random() * 100 < 50) {
+            this.color += 1;
+        } else {
+            this.color -= 1;
+        }
+    };
+
+    // start animation
+    render();
+</script>
+
+</body>
+</html>

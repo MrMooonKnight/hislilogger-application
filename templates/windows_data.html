@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Windows Client Data</title>
+</head>
+<body>
+    <h1>Windows Client Data</h1>
+    <form action="{{ url_for('get_device_data') }}" method="post">
+        <table>
+            <tr>
+                <th>Device Name</th>
+                <th>IP Address</th>
+            </tr>
+            {% for device in data %}
+                <tr>
+                    <td>{{ device[0] }}</td>
+                    <td>{{ device[1] }}</td>
+                    <td><button type="submit" name="device" value="{{ device[0] }}">Select</button></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </form>
+</body>
+</html>
