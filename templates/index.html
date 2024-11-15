@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CyphraGuard</title>
+    <title>Hislilogger</title>
     <style>
         body,
         canvas {
@@ -75,14 +75,15 @@
 <body>
 
 <div class="topnav">
-    <div class="logo">CyphraGuard</div>
-    <a href="{{ url_for('faheem') }}"></a>
+    <div class="logo">Hislilogger</div>
     <a class="active" href="{{ url_for('home') }}">Home</a>
-    <a href="{{ url_for('windows') }}">Windows</a>
-    <a href="{{ url_for('linux') }}">Linux</a>
-    <a href="{{ url_for('view_clients') }}">View Clients</a>
+    <a href="{{ url_for('device') }}">Device</a>
+    <a href="{{ url_for('firefox_history') }}">Firefox History</a>
+    <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a href="{{ url_for('bash_history') }}">Bash History</a>
     <a href="{{ url_for('about') }}">About</a>
 </div>
+
 
 <div class="content">
     <img src="{{ url_for('static', filename='cyphra.png') }}" alt="CyphraGuard Logo">

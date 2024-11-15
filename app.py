@@ -1,170 +1,197 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
 import subprocess
 import os
+import json
+import re
+
+
+############################################################################################################################
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+
+############################################################################################################################
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/update_clients', methods=['POST'])
-def update_clients():
-    script_path = "python clientsGetter.py"
+############################################################################################################################
+@app.route('/firefox_history', methods=['GET'])
+def firefox_history():
+    # Path to the directory containing the history files
+    history_dir = "data/firefox/history"
+    
     try:
-        subprocess.run(["powershell", "-Command", script_path], check=True)
-        flash("Clients list has been updated")
+        print(f"Checking directory: {history_dir}")  # Debug
+        files = [f for f in os.listdir(history_dir) if os.path.isfile(os.path.join(history_dir, f))]
+        print(f"Files found: {files}")  # Debug
+    except FileNotFoundError:
+        files = []
+        flash(f"Directory {history_dir} not found.")
+    
+    return render_template('firefoxhistory.html', files=files)
+
+
+@app.route('/update_firefox_history', methods=['POST'])
+def update_firefox_history():
+    # Ensure the script path is correct and Linux-compatible
+    script_path = "getHistory.py"
+    
+    try:
+        # Use subprocess to run the Python script on Linux
+        subprocess.run(["python3", script_path, "20"], check=True)
+        flash("Firefox history has been updated successfully.")
     except subprocess.CalledProcessError as e:
         flash(f"An error occurred while running the script: {e}")
-    return redirect(url_for('view_clients'))
-
-@app.route('/view_clients', methods=['GET', 'POST'])
-def view_clients():
-    clients = []
-    try:
-        with open('windows.txt', 'r') as file:
-            clients += [line.strip().split(',') for line in file.readlines()]
     except FileNotFoundError:
-        flash("The file windows.txt was not found.")
+        flash(f"Script not found at {script_path}.")
     
-    try:
-        with open('others.txt', 'r') as file:
-            clients += [line.strip().split(',') for line in file.readlines()]
-    except FileNotFoundError:
-        flash("The file others.txt was not found.")
-    
-    return render_template('clients.html', clients=clients)
+    return redirect(url_for('firefox_history'))
 
-@app.route('/windows')
-def windows():
-    devices = []
-    try:
-        with open('windows.txt', 'r') as file:
-            devices = [line.strip().split(',') for line in file.readlines()]
-    except FileNotFoundError:
-        flash("The file windows.txt was not found.")
-    return render_template('windows.html', devices=devices)
 
-@app.route('/device/<device_name>', methods=['GET', 'POST'])
-def device(device_name):
-    data_folder = os.path.join('Data', device_name)
-    data_files = []
-    if os.path.exists(data_folder) and os.path.isdir(data_folder):
-        data_files = os.listdir(data_folder)
-    else:
-        flash(f"The data folder for device {device_name} was not found.")
-    
-    # Fetch any flash messages before rendering
-    messages = get_flashed_messages()
-    
-    return render_template('device.html', device_name=device_name, data_files=data_files, messages=messages)
-
-@app.route('/get_data/<device_name>', methods=['POST'])
-def get_data(device_name):
-    script_path = "python getWindowsData.py"
-    try:
-        subprocess.run(["powershell", "-Command", f"{script_path} {device_name}"], check=True)
-        flash(f"Data for device {device_name} has been retrieved.")
-    except subprocess.CalledProcessError as e:
-        flash(f"An error occurred while running the script: {e}")
-    return redirect(url_for('device', device_name=device_name))
-
-@app.route('/select_file/<device_name>', methods=['POST'])
-def select_file(device_name):
+@app.route('/select_history', methods=['POST'])
+def select_history():
     selected_file = request.form['data_file']
-    return redirect(url_for('view_file', device_name=device_name, file_name=selected_file))
+    return redirect(url_for('view_history', file_name=selected_file))
 
-@app.route('/view_file/<device_name>/<file_name>')
-def view_file(device_name, file_name):
-    file_path = os.path.join('Data', device_name, file_name)
-    data = {}
+@app.route('/view/<file_name>')
+def view_history(file_name):
+    with open(f'data/firefox/history/{file_name}') as f:
+        data = json.load(f)
+    return render_template('view_history.html', file_name=file_name, data=data)
+
+############################################################################################################################
+
+@app.route('/firefox_bookmarks', methods=['GET'])
+def firefox_bookmarks():
+    # Path to the directory containing the bookmarks files
+    bookmarks_dir = "data/firefox/bookmarks"
+    
     try:
-        with open(file_path, 'r') as file:
-            current_header = None
-            for line in file:
-                line = line.strip()
-                if not line:
-                    continue
-                if line.endswith('_Information'):
-                    current_header = line
-                    data[current_header] = []
-                elif current_header and ',' in line:
-                    data[current_header].append(line.split(','))
+        print(f"Checking directory: {bookmarks_dir}")  # Debug
+        files = [f for f in os.listdir(bookmarks_dir) if os.path.isfile(os.path.join(bookmarks_dir, f))]
+        print(f"Files found: {files}")  # Debug
     except FileNotFoundError:
-        flash(f"The file {file_name} was not found for device {device_name}.")
+        files = []
+        flash(f"Directory {bookmarks_dir} not found.")
     
-    return render_template('view_file.html', device_name=device_name, file_name=file_name, data=data)
+    return render_template('firefoxbookmarks.html', files=files)
 
-@app.route('/linux')
-def linux():
-    devices = []
-    with open('others.txt', 'r') as file:
-        for line in file:
-            device_info = line.strip().split(',')
-            devices.append(device_info)
-    return render_template('linux.html', devices=devices)
-
-@app.route('/linux_device', methods=['POST'])
-def linux_device():
-    device_ip = request.form['device_ip']
-    return redirect(url_for('device_by_ip', device_ip=device_ip))
-
-@app.route('/device_by_ip/<device_ip>', methods=['GET', 'POST'])
-def device_by_ip(device_ip):
-    data_folder = os.path.join('Data', device_ip)
-    data_files = []
-    if os.path.exists(data_folder) and os.path.isdir(data_folder):
-        data_files = os.listdir(data_folder)
-    else:
-        flash(f"The data folder for device with IP {device_ip} was not found.")
+@app.route('/update_firefox_bookmarks', methods=['POST'])
+def update_firefox_bookmarks():
+    # Ensure the script path is correct and Linux-compatible
+    script_path = "getBookmarks.py"
     
-    # Fetch any flash messages before rendering
-    messages = get_flashed_messages()
-    
-    return render_template('linux_device.html', device_name=device_ip, data_files=data_files, messages=messages)
-
-
-
-
-@app.route('/get_linux_data/<device_name>', methods=['POST'])
-def get_linux_data(device_name):
-    script_path = "python getLinuxData.py"
     try:
-        subprocess.run(["powershell", "-Command", f"{script_path} {device_name}"], check=True)
-        flash(f"Data for device {device_name} has been retrieved.")
+        # Use subprocess to run the Python script on Linux
+        subprocess.run(["python3", script_path, "20"], check=True)
+        flash("Firefox bookmarks has been updated successfully.")
     except subprocess.CalledProcessError as e:
         flash(f"An error occurred while running the script: {e}")
-    return redirect(url_for('device', device_ip=device_name))
+    except FileNotFoundError:
+        flash(f"Script not found at {script_path}.")
+    
+    return redirect(url_for('firefox_bookmarks'))
 
+@app.route('/select_bookmarks', methods=['POST'])
+def select_bookmarks():
+    selected_file = request.form['data_file']
+    return redirect(url_for('view_bookmarks', file_name=selected_file))
 
+@app.route('/view_bookmarks/<file_name>')
+def view_bookmarks(file_name):
+    with open(f'data/firefox/bookmarks/{file_name}') as f:
+        data = json.load(f)
+    return render_template('view_bookmarks.html', file_name=file_name, data=data)
 
-@app.route('/check_status/<ip_address>', methods=['GET', 'POST'])
-def check_status(ip_address):
-    script_path = "python checkStatus.py"
+############################################################################################################################
+
+@app.route('/bash_history', methods=['GET'])
+def bash_history():
+    # Path to the directory containing the bash history files
+    bash_dir = "data/bash_history"
+    
     try:
-        # Capture the output of the script
-        result = subprocess.run(
-            ["powershell", "-Command", f"{script_path} {ip_address}"],
-            check=True,
-            capture_output=True,
-            text=True
-        )
-        # Flash the output of the script
-        flash(f"Status for {ip_address} checked: {result.stdout}")
+        print(f"Checking directory: {bash_dir}")  # Debug
+        files = [f for f in os.listdir(bash_dir) if os.path.isfile(os.path.join(bash_dir, f))]
+        print(f"Files found: {files}")  # Debug
+    except FileNotFoundError:
+        files = []
+        flash(f"Directory {bash_dir} not found.")
+    
+    return render_template('bashhistory.html', files=files)
+
+
+@app.route('/update_bash_history', methods=['POST'])
+def update_bash_history():
+    # Ensure the script path is correct and Linux-compatible
+    script_path = "getBashHistory.py"
+    
+    try:
+        # Use subprocess to run the Python script on Linux
+        subprocess.run(["python3", script_path, "20"], check=True)
+        flash("Bash history has been retrieved successfully.")
     except subprocess.CalledProcessError as e:
-        flash(f"An error occurred while running the script: {e.stderr}")
-    return redirect(url_for('windows'))
+        flash(f"An error occurred while running the script: {e}")
+    except FileNotFoundError:
+        flash(f"Script not found at {script_path}.")
+    
+    return redirect(url_for('bash_history'))
 
 
+@app.route('/select_bashhistory', methods=['POST'])
+def select_bashhistory():
+    selected_file = request.form['data_file']
+    return redirect(url_for('view_bashhistory', file_name=selected_file))
+
+@app.route('/view_bashhistory/<file_name>')
+def view_bashhistory(file_name):
+    bash_dir = "data/bash_history"
+    file_path = os.path.join(bash_dir, file_name)
+    
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        commands = data.get("commands", [])
+    except (FileNotFoundError, json.JSONDecodeError):
+        flash(f"Failed to read or parse the file: {file_name}")
+        commands = []
+
+    return render_template('view_bashhistory.html', file_name=file_name, commands=commands)
+
+############################################################################################################################
+
+@app.route('/device')
+def device():
+    # Execute the command and clean up the output
+    device_info = subprocess.check_output(["./fastfetch"], text=True)
+    device_info_clean = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', device_info)  # Strip ANSI escape codes
+
+    # Split into lines and separate logo and info parts
+    lines = device_info_clean.splitlines()
+    logo_part = '\n'.join(lines[:20])  # First 20 lines for logo
+    info_part = '\n'.join(lines[21:])  # Remaining lines for device info
+
+    # Remove `username@username` from the last line of the logo
+    logo_lines = logo_part.splitlines()
+    logo_lines[-1] = re.sub(r'\b\w+@\w+\b', '', logo_lines[-1])  # Remove `username@username`
+    logo_part = '\n'.join(logo_lines)
+
+    # Render the template
+    return render_template('device.html', logo_part=logo_part, info_part=info_part)
+
+
+############################################################################################################################
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/faheem')
-def faheem():
-    return render_template('faheem.html')
+############################################################################################################################
+
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+############################################################################################################################

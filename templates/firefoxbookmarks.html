@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firefox Bookmarks</title>
+    <style>
+        @charset "UTF-8";
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+
+        body, html {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        h2 {
+            font-size: 3em;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: white;
+            margin-top: 80px; /* Add margin to push content down */
+        }
+
+        .topnav {
+            overflow: hidden;
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .topnav a {
+            float: left;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+            transition: color 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease;
+        }
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+            border-radius: 10px;
+        }
+        .topnav a.active {
+            background-color: #eb3105;
+            color: white;
+            border-radius: 10px;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            font-family: 'Brush Script MT', cursive;
+            margin-right: auto;
+            padding: 14px 16px;
+        }
+
+        .container {
+            text-align: center;
+            overflow: hidden;
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #323C50;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        label, select, button {
+            color: white;
+            font-size: 1.2em;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+
+        select {
+            padding: 10px;
+            background-color: #1F2739;
+            border: none;
+            border-radius: 5px;
+            color: white;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 15px;
+            border: 1px solid #d6e9c6;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            z-index: 1001;
+            display: none; /* Hide initially */
+        }
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+    <div class="logo">Hislilogger</div>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('device') }}">Device</a>
+    <a href="{{ url_for('firefox_history') }}">Firefox History</a>
+    <a class="active" href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a href="{{ url_for('bash_history') }}">Bash History</a>
+    <a href="{{ url_for('about') }}">About</a>
+</div>
+
+<h2>Firefox Bookmarks</h2>
+
+<div class="container">
+    <form action="{{ url_for('select_bookmarks') }}" method="post">
+        <label for="data_files">Select a bookmark file:</label>
+        <select name="data_file" id="data_files">
+            {% for file in files %}
+                <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Select File</button>
+    </form>
+
+
+
+
+   <form action="{{ url_for('update_firefox_bookmarks') }}" method="post">
+        <button type="submit">Get Data</button>
+    </form>
+</div>
+
+<div class="flash-message" id="flash-message">
+    {{ get_flashed_messages()[0] }}
+</div>
+
+<script>
+    var maxx = document.body.clientWidth;
+    var maxy = document.body.clientHeight;
+    var halfx = maxx / 2;
+    var halfy = maxy / 2;
+    var canvas = document.createElement("canvas");
+    document.body.insertBefore(canvas, document.body.firstChild);
+    canvas.width = maxx;
+    canvas.height = maxy;
+    var context = canvas.getContext("2d");
+    var dotCount = 200;
+    var dots = [];
+
+    for (var i = 0; i < dotCount; i++) {
+        dots.push(new dot());
+    }
+
+    function render() {
+        context.fillStyle = "#000000";
+        context.fillRect(0, 0, maxx, maxy);
+        for (var i = 0; i < dotCount; i++) {
+            dots[i].draw();
+            dots[i].move();
+        }
+        requestAnimationFrame(render);
+    }
+
+    function dot() {
+        this.rad_x = 2 * Math.random() * halfx + 1;
+        this.rad_y = 1.2 * Math.random() * halfy + 1;
+        this.alpha = Math.random() * 360 + 1;
+        this.speed = Math.random() * 100 < 50 ? 1 : -1;
+        this.speed *= 0.1;
+        this.size = Math.random() * 5 + 1;
+        this.color = Math.floor(Math.random() * 256);
+    }
+
+    dot.prototype.draw = function() {
+        var dx = halfx + this.rad_x * Math.cos(this.alpha / 180 * Math.PI);
+        var dy = halfy + this.rad_y * Math.sin(this.alpha / 180 * Math.PI);
+        context.fillStyle = "rgb(" + this.color + "," + this.color + "," + this.color + ")";
+        context.fillRect(dx, dy, this.size, this.size);
+    };
+
+    dot.prototype.move = function() {
+        this.alpha += this.speed;
+        if (Math.random() * 100 < 50) {
+            this.color += 1;
+        } else {
+            this.color -= 1;
+        }
+    };
+
+    render();
+
+    // Flash message script
+    function showFlashMessage() {
+        var flashMessage = document.getElementById("flash-message");
+        if (flashMessage.textContent.trim().length > 0) {
+            flashMessage.style.display = "block";
+            setTimeout(function () {
+                flashMessage.style.display = "none";
+            }, 3000);
+        }
+    }
+
+    window.onload = showFlashMessage;
+</script>
+</body>
+</html>

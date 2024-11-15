@@ -7,13 +7,20 @@
         @charset "UTF-8";
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 
-        body, html {
+         body, html {
             text-align: center;
             position: relative;
             width: 100%;
             height: 100%;
             margin: 0;
             padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: transparent; /* Make sure background is transparent */
+            color: #FFF;
+        }
+
+        .topnav {
+            background-color: transparent; /* Remove black background */
         }
 
         canvas {
@@ -22,14 +29,13 @@
             height: 100%;
             top: 0;
             left: 0;
-            z-index: -1;
+            z-index: -2; /* Ensure canvas is behind all elements */
         }
+
 
         h2 {
             font-size: 3em;
             font-weight: 300;
-            line-height: 1em;
-            text-align: center;
             color: white;
             margin-top: 80px;
         }
@@ -49,13 +55,11 @@
         }
 
         .topnav a {
-            float: left;
             color: white;
-            text-align: center;
             padding: 14px 16px;
             text-decoration: none;
             font-size: 17px;
-            transition: color 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease;
+            transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
         }
 
         .topnav a:hover {
@@ -80,18 +84,16 @@
         }
 
         .container {
-            text-align: center;
-            overflow: hidden;
             width: 70%;
-            margin: 0 auto;
+            margin: 120px auto 0;
             padding: 20px;
-            background-color: #323C50;
+            background-color: rgba(50, 60, 80, 0.8); /* Semi-transparent background */
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .scrollable-table {
-            max-height: 400px; /* Adjust the height as needed */
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -101,21 +103,18 @@
             margin: 20px 0;
             font-size: 1.2em;
             min-width: 400px;
-            border-radius: 5px 5px 0 0;
-            overflow: hidden;
         }
 
         table thead tr {
             background-color: #009879;
             color: #ffffff;
-            text-align: left;
+            text-align: center; /* Center-align header text */
             font-weight: bold;
         }
 
-        table th,
-        table td {
-        	color:white;
+        table th, table td {
             padding: 12px 15px;
+            text-align: center; /* Center-align cell text */
         }
 
         table tbody tr {
@@ -123,7 +122,8 @@
         }
 
         table tbody tr:nth-of-type(even) {
-            background-color: #f3f3f3;
+            background-color: rgba(243, 243, 243, 0.8); /* Semi-transparent row background */
+            color: black;
         }
 
         table tbody tr:last-of-type {
@@ -135,61 +135,56 @@
             color: #009879;
         }
 
+        .url-cell {
+            max-width: 700px; /* Increase max-width to fill more space */
+            overflow-x: auto;
+            white-space: nowrap;
+            display: inline-block;
+        }
 
-
-		/* Background-color of the odd rows */
-		.container tr:nth-child(odd) {
-			  background-color: #323C50;
-		}
-
-		/* Background-color of the even rows */
-		.container tr:nth-child(even) {
-			  background-color: #2C3446;
-		}
-
-		.container th {
-			  background-color: #1F2739;
-		}
-
-
-        .header {
-            background-color: green;
+        .url-cell a {
             color: white;
-            font-size: 1.5em; /* Increase the font size */
-            padding: 10px;
-            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        table tbody tr:nth-of-type(even) .url-cell a {
+            color: black;
         }
     </style>
 </head>
 <body>
 
 <div class="topnav">
-    <div class="logo">CyphraGuard</div>
+    <div class="logo">Hislilogger</div>
     <a href="{{ url_for('home') }}">Home</a>
-    <a href="{{ url_for('windows') }}">Windows</a>
-    <a href="{{ url_for('linux') }}">Linux</a>
-    <a href="{{ url_for('view_clients') }}">View Clients</a>
+    <a href="{{ url_for('device') }}">Device</a>
+    <a href="{{ url_for('firefox_history') }}">Firefox History</a>
+    <a class="active" href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a href="{{ url_for('bash_history') }}">Bash History</a>
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
 <h2>View File: {{ file_name }}</h2>
 
 <div class="container">
-    {% for header, rows in data.items() %}
-        <h3 class="header">{{ header.replace('_', ' ') }}</h3> <!-- Replace underscores and style the header -->
-        <div class="scrollable-table">
-            <table>
-                <tbody>
-                {% for row in rows %}
+    <div class="scrollable-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>URL</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in data %}
                     <tr>
-                        <td>{{ row[0] }}</td>
-                        <td>{{ row[1] }}</td>
+                        <td><div class="url-cell"><a href="{{ entry.url }}" target="_blank">{{ entry.url }}</a></div></td>
+                        <td>{{ entry.time }}</td>
                     </tr>
                 {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>

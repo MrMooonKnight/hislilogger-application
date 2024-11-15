@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Device: {{ device_name }}</title>
+    <title>View File: {{ file_name }}</title>
     <style>
         @charset "UTF-8";
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
@@ -14,25 +14,29 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background-color: transparent;
+            color: #FFF;
+        }
+
+        .topnav {
+            background-color: black;
         }
 
         canvas {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
-            z-index: -1;
+            z-index: -2;
         }
 
         h2 {
             font-size: 3em;
             font-weight: 300;
-            line-height: 1em;
-            text-align: center;
             color: white;
-            margin-top: 80px; /* Add margin to push content down */
+            margin-top: 80px;
         }
 
         .topnav {
@@ -48,25 +52,27 @@
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .topnav a {
-            float: left;
             color: white;
-            text-align: center;
             padding: 14px 16px;
             text-decoration: none;
             font-size: 17px;
-            transition: color 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease;
+            transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
         }
+
         .topnav a:hover {
             background-color: #ddd;
             color: black;
             border-radius: 10px;
         }
+
         .topnav a.active {
             background-color: #eb3105;
             color: white;
             border-radius: 10px;
         }
+
         .logo {
             font-size: 1.5em;
             font-weight: bold;
@@ -77,105 +83,90 @@
         }
 
         .container {
-            text-align: center;
-            overflow: hidden;
-            width: 50%;
-            margin: 0 auto;
+            width: 70%;
+            margin: 120px auto 0;
             padding: 20px;
-            background-color: #323C50;
+            background-color: rgba(50, 60, 80, 0.8);
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        label, select, button {
-            color: white;
-            font-size: 1.2em;
-            margin: 10px 0;
-            display: block;
-            width: 100%;
-        }
-
-        select {
-            padding: 10px;
-            background-color: #1F2739;
-            border: none;
-            border-radius: 5px;
-            color: white;
-        }
-
-        button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 12px;
-        }
-
-        form {
-            margin: 20px 0;
-        }
-
         .scrollable-table {
-            height: 400px; /* Set your desired height here */
-            overflow-y: auto; /* Vertical scrollbar only */
-            overflow-x: hidden; /* Hide horizontal scrollbar */
-            position: relative; /* Ensure positioning context */
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .flash-message {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #dff0d8;
-            color: #3c763d;
-            padding: 15px;
-            border: 1px solid #d6e9c6;
-            border-radius: 4px;
-            margin-bottom: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.2em;
+            min-width: 400px;
+        }
+
+        table thead tr {
+            background-color: #009879;
+            color: #ffffff;
             text-align: center;
-            z-index: 1001;
-            display: none; /* Hide initially */
+            font-weight: bold;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        table tbody tr:nth-of-type(even) {
+            background-color: rgba(243, 243, 243, 0.8);
+            color: black;
+        }
+
+        table tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+
+        table tbody tr.active-row {
+            font-weight: bold;
+            color: #009879;
         }
     </style>
 </head>
 <body>
 
 <div class="topnav">
-    <div class="logo">CyphraGuard</div>
+    <div class="logo">Hislilogger</div>
     <a href="{{ url_for('home') }}">Home</a>
-    <a href="{{ url_for('windows') }}">Windows</a>
-    <a href="{{ url_for('linux') }}">Linux</a>
-    <a href="{{ url_for('view_clients') }}">View Clients</a>
+    <a href="{{ url_for('device') }}">Device</a>
+    <a href="{{ url_for('firefox_history') }}">Firefox History</a>
+    <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a class="active" href="{{ url_for('bash_history') }}">Bash History</a>
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
-<h2>Device: {{ device_name }}</h2>
+<h2>View File: {{ file_name }}</h2>
 
 <div class="container">
-    <form action="{{ url_for('select_file', device_name=device_name) }}" method="post">
-        <label for="data_files">Select a data file:</label>
-        <select name="data_file" id="data_files">
-            {% for file in data_files %}
-                <option value="{{ file }}">{{ file }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Select File</button>
-    </form>
+    <div class="scrollable-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bash Commands</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for command in commands %}
+                    <tr>
+                        <td>{{ command }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
 
-    <form action="{{ url_for('get_linux_data', device_name=device_name) }}" method="post">
-        <button type="submit">Get Data</button>
-    </form>
-</div>
-
-<div class="flash-message" id="flash-message">
-    {{ get_flashed_messages()[0] }}
+        </table>
+    </div>
 </div>
 
 <script>
@@ -232,19 +223,7 @@
     };
 
     render();
-
-    // Flash message script
-    function showFlashMessage() {
-        var flashMessage = document.getElementById("flash-message");
-        if (flashMessage.textContent.trim().length > 0) {
-            flashMessage.style.display = "block";
-            setTimeout(function () {
-                flashMessage.style.display = "none";
-            }, 3000);
-        }
-    }
-
-    window.onload = showFlashMessage;
 </script>
+
 </body>
 </html>

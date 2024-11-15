@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View File: {{ file_name }}</title>
+    <style>
+        @charset "UTF-8";
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+
+         body, html {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: transparent; /* Make sure background is transparent */
+            color: #FFF;
+        }
+
+        .topnav {
+            background-color: transparent; /* Remove black background */
+        }
+
+        canvas {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2; /* Ensure canvas is behind all elements */
+        }
+
+
+        h2 {
+            font-size: 3em;
+            font-weight: 300;
+            color: white;
+            margin-top: 80px;
+        }
+
+        .topnav {
+            overflow: hidden;
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .topnav a {
+            color: white;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+            transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+            border-radius: 10px;
+        }
+
+        .topnav a.active {
+            background-color: #eb3105;
+            color: white;
+            border-radius: 10px;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            font-family: 'Brush Script MT', cursive;
+            margin-right: auto;
+            padding: 14px 16px;
+        }
+
+        .container {
+            width: 70%;
+            margin: 120px auto 0;
+            padding: 20px;
+            background-color: rgba(50, 60, 80, 0.8); /* Semi-transparent background */
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .scrollable-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.2em;
+            min-width: 400px;
+        }
+
+        table thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: center; /* Center-align header text */
+            font-weight: bold;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: center; /* Center-align cell text */
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        table tbody tr:nth-of-type(even) {
+            background-color: rgba(243, 243, 243, 0.8); /* Semi-transparent row background */
+            color: black;
+        }
+
+        table tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+
+        table tbody tr.active-row {
+            font-weight: bold;
+            color: #009879;
+        }
+
+        .url-cell {
+            max-width: 700px; /* Increase max-width to fill more space */
+            overflow-x: auto;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .url-cell a {
+            color: white;
+            text-decoration: none;
+        }
+
+        table tbody tr:nth-of-type(even) .url-cell a {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topnav">
+    <div class="logo">Hislilogger</div>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('device') }}">Device</a>
+    <a class="active" href="{{ url_for('firefox_history') }}">Firefox History</a>
+    <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a href="{{ url_for('bash_history') }}">Bash History</a>
+    <a href="{{ url_for('about') }}">About</a>
+</div>
+
+<h2>View File: {{ file_name }}</h2>
+
+<div class="container">
+    <div class="scrollable-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>URL</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in data %}
+                    <tr>
+                        <td><div class="url-cell"><a href="{{ entry.url }}" target="_blank">{{ entry.url }}</a></div></td>
+                        <td>{{ entry.time }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var maxx = document.body.clientWidth;
+    var maxy = document.body.clientHeight;
+    var halfx = maxx / 2;
+    var halfy = maxy / 2;
+    var canvas = document.createElement("canvas");
+    document.body.insertBefore(canvas, document.body.firstChild);
+    canvas.width = maxx;
+    canvas.height = maxy;
+    var context = canvas.getContext("2d");
+    var dotCount = 200;
+    var dots = [];
+
+    for (var i = 0; i < dotCount; i++) {
+        dots.push(new dot());
+    }
+
+    function render() {
+        context.fillStyle = "#000000";
+        context.fillRect(0, 0, maxx, maxy);
+        for (var i = 0; i < dotCount; i++) {
+            dots[i].draw();
+            dots[i].move();
+        }
+        requestAnimationFrame(render);
+    }
+
+    function dot() {
+        this.rad_x = 2 * Math.random() * halfx + 1;
+        this.rad_y = 1.2 * Math.random() * halfy + 1;
+        this.alpha = Math.random() * 360 + 1;
+        this.speed = Math.random() * 100 < 50 ? 1 : -1;
+        this.speed *= 0.1;
+        this.size = Math.random() * 5 + 1;
+        this.color = Math.floor(Math.random() * 256);
+    }
+
+    dot.prototype.draw = function() {
+        var dx = halfx + this.rad_x * Math.cos(this.alpha / 180 * Math.PI);
+        var dy = halfy + this.rad_y * Math.sin(this.alpha / 180 * Math.PI);
+        context.fillStyle = "rgb(" + this.color + "," + this.color + "," + this.color + ")";
+        context.fillRect(dx, dy, this.size, this.size);
+    };
+
+    dot.prototype.move = function() {
+        this.alpha += this.speed;
+        if (Math.random() * 100 < 50) {
+            this.color += 1;
+        } else {
+            this.color -= 1;
+        }
+    };
+
+    render();
+</script>
+
+</body>
+</html>
