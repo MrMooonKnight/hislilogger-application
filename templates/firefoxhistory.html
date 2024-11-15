@@ -56,6 +56,8 @@
             text-decoration: none;
             font-size: 17px;
             transition: color 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease;
+            margin: 8px 3px 0px 3px;
+
         }
         .topnav a:hover {
             background-color: #ddd;
@@ -150,7 +152,7 @@
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
-<h2>Firefox History</h2>
+<h2 style="margin: 180px 0px 130px 0px;">Firefox History</h2>
 
 <div class="container">
     <form action="{{ url_for('select_history') }}" method="post">

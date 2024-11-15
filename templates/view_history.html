@@ -52,6 +52,7 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
         }
 
         .topnav a {
@@ -60,6 +61,8 @@
             text-decoration: none;
             font-size: 17px;
             transition: color 0.3s, background-color 0.3s, border-radius 0.3s;
+            margin: 8px 3px 0px 3px;
+            font-family: times-new-roman;
         }
 
         .topnav a:hover {
@@ -164,7 +167,8 @@
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
-<h2>View File: {{ file_name }}</h2>
+<h2 style="margin: 160px 0px 0px 0px;">View File: {{ file_name }}</h2>
+
 
 <div class="container">
     <div class="scrollable-table">

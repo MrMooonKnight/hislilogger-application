@@ -40,7 +40,7 @@ def update_firefox_history():
     
     try:
         # Use subprocess to run the Python script on Linux
-        subprocess.run(["python3", script_path, "20"], check=True)
+        subprocess.run(["python3", script_path, "100"], check=True)
         flash("Firefox history has been updated successfully.")
     except subprocess.CalledProcessError as e:
         flash(f"An error occurred while running the script: {e}")
@@ -85,7 +85,7 @@ def update_firefox_bookmarks():
     
     try:
         # Use subprocess to run the Python script on Linux
-        subprocess.run(["python3", script_path, "20"], check=True)
+        subprocess.run(["python3", script_path, "-a"], check=True)
         flash("Firefox bookmarks has been updated successfully.")
     except subprocess.CalledProcessError as e:
         flash(f"An error occurred while running the script: {e}")
@@ -130,7 +130,7 @@ def update_bash_history():
     
     try:
         # Use subprocess to run the Python script on Linux
-        subprocess.run(["python3", script_path, "20"], check=True)
+        subprocess.run(["python3", script_path, "100"], check=True)
         flash("Bash history has been retrieved successfully.")
     except subprocess.CalledProcessError as e:
         flash(f"An error occurred while running the script: {e}")
