@@ -84,7 +84,7 @@ def main():
     args = parser.parse_args()
 
     # Set up directories
-    base_dir = os.path.expanduser("./data")
+    base_dir = os.path.expanduser("./application/data")
     firefox_dir = os.path.join(base_dir, "firefox")
     bookmark_dir = os.path.join(firefox_dir, "bookmarks")
     os.makedirs(bookmark_dir, exist_ok=True)

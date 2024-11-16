@@ -36,7 +36,7 @@ def process_history():
             commands = [cmd.strip() for cmd in file][::-1]
         
         # Create output directory and JSON filename
-        output_dir = os.path.join("data", f"{history_name.split('_')[0]}_history")
+        output_dir = os.path.join("application/data/bash_history")
         os.makedirs(output_dir, exist_ok=True)
         filename = os.path.join(output_dir, f"{time.strftime('%Y%m%d%H%M%S')}_{history_name}.json")
         

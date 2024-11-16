@@ -20,7 +20,7 @@ def home():
 @app.route('/firefox_history', methods=['GET'])
 def firefox_history():
     # Path to the directory containing the history files
-    history_dir = "data/firefox/history"
+    history_dir = "application/data/firefox/history"
     
     try:
         print(f"Checking directory: {history_dir}")  # Debug
@@ -36,7 +36,7 @@ def firefox_history():
 @app.route('/update_firefox_history', methods=['POST'])
 def update_firefox_history():
     # Ensure the script path is correct and Linux-compatible
-    script_path = "getHistory.py"
+    script_path = "application/getHistory.py"
     
     try:
         # Use subprocess to run the Python script on Linux
@@ -57,7 +57,7 @@ def select_history():
 
 @app.route('/view/<file_name>')
 def view_history(file_name):
-    with open(f'data/firefox/history/{file_name}') as f:
+    with open(f'application/data/firefox/history/{file_name}') as f:
         data = json.load(f)
     return render_template('view_history.html', file_name=file_name, data=data)
 
@@ -66,7 +66,7 @@ def view_history(file_name):
 @app.route('/firefox_bookmarks', methods=['GET'])
 def firefox_bookmarks():
     # Path to the directory containing the bookmarks files
-    bookmarks_dir = "data/firefox/bookmarks"
+    bookmarks_dir = "application/data/firefox/bookmarks"
     
     try:
         print(f"Checking directory: {bookmarks_dir}")  # Debug
@@ -81,7 +81,7 @@ def firefox_bookmarks():
 @app.route('/update_firefox_bookmarks', methods=['POST'])
 def update_firefox_bookmarks():
     # Ensure the script path is correct and Linux-compatible
-    script_path = "getBookmarks.py"
+    script_path = "application/getBookmarks.py"
     
     try:
         # Use subprocess to run the Python script on Linux
@@ -101,7 +101,7 @@ def select_bookmarks():
 
 @app.route('/view_bookmarks/<file_name>')
 def view_bookmarks(file_name):
-    with open(f'data/firefox/bookmarks/{file_name}') as f:
+    with open(f'application/data/firefox/bookmarks/{file_name}') as f:
         data = json.load(f)
     return render_template('view_bookmarks.html', file_name=file_name, data=data)
 
@@ -110,7 +110,7 @@ def view_bookmarks(file_name):
 @app.route('/bash_history', methods=['GET'])
 def bash_history():
     # Path to the directory containing the bash history files
-    bash_dir = "data/bash_history"
+    bash_dir = "application/data/bash_history"
     
     try:
         print(f"Checking directory: {bash_dir}")  # Debug
@@ -126,7 +126,7 @@ def bash_history():
 @app.route('/update_bash_history', methods=['POST'])
 def update_bash_history():
     # Ensure the script path is correct and Linux-compatible
-    script_path = "getBashHistory.py"
+    script_path = "application/getBashHistory.py"
     
     try:
         # Use subprocess to run the Python script on Linux
@@ -147,7 +147,7 @@ def select_bashhistory():
 
 @app.route('/view_bashhistory/<file_name>')
 def view_bashhistory(file_name):
-    bash_dir = "data/bash_history"
+    bash_dir = "application/data/bash_history"
     file_path = os.path.join(bash_dir, file_name)
     
     try:
@@ -165,7 +165,7 @@ def view_bashhistory(file_name):
 @app.route('/device')
 def device():
     # Execute the command and clean up the output
-    device_info = subprocess.check_output(["./fastfetch"], text=True)
+    device_info = subprocess.check_output(["./application/fastfetch"], text=True)
     device_info_clean = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', device_info)  # Strip ANSI escape codes
 
     # Split into lines and separate logo and info parts
