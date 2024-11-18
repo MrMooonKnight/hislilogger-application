@@ -91,6 +91,7 @@ def main():
 
     # Firefox database paths
     original_db_path = os.path.expanduser("~/snap/firefox/common/.mozilla/firefox/8ve3ga0x.default/places.sqlite")
+
     copied_db_path = os.path.join(firefox_dir, "places.sqlite")
 
     print(Fore.YELLOW + "Preparing to copy Firefox database...")

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bash History</title>
+    <title>Services</title>
     <style>
         @charset "UTF-8";
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
@@ -148,18 +148,18 @@
     <a href="{{ url_for('device') }}">Device</a>
     <a href="{{ url_for('firefox_history') }}">Firefox History</a>
     <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
-    <a class="active" href="{{ url_for('bash_history') }}">Bash History</a>
+    <a href="{{ url_for('bash_history') }}">Bash History</a>
     <a href="{{ url_for('recently_used') }}">Recently Used</a>
-    <a href="{{ url_for('services') }}">Services</a>
+    <a class="active" href="{{ url_for('services') }}">Services</a>
     <a href="{{ url_for('softwares') }}">Softwares</a>
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
-<h2 style="margin: 180px 0px 130px 0px;">Bash History</h2>
+<h2 style="margin: 180px 0px 130px 0px;">Services</h2>
 
 <div class="container">
-    <form action="{{ url_for('select_bashhistory') }}" method="post">
-        <label for="data_files">Select a bash history file:</label>
+    <form action="{{ url_for('select_services') }}" method="post">
+        <label for="data_files">Select a services file:</label>
         <select name="data_file" id="data_files">
             {% for file in files %}
                 <option value="{{ file }}">{{ file }}</option>
@@ -172,7 +172,7 @@
 
 
 
-   <form action="{{ url_for('update_bash_history') }}" method="post">
+   <form action="{{ url_for('update_services') }}" method="post">
         <button type="submit">Get Data</button>
     </form>
 </div>

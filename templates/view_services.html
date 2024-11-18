@@ -52,6 +52,7 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
         }
 
         .topnav a {
@@ -161,31 +162,32 @@
     <a href="{{ url_for('home') }}">Home</a>
     <a href="{{ url_for('device') }}">Device</a>
     <a href="{{ url_for('firefox_history') }}">Firefox History</a>
-    <a class="active" href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
     <a href="{{ url_for('bash_history') }}">Bash History</a>
     <a href="{{ url_for('recently_used') }}">Recently Used</a>
-    <a href="{{ url_for('services') }}">Services</a>
+    <a class="active" href="{{ url_for('services') }}">Services</a>
     <a href="{{ url_for('softwares') }}">Softwares</a>
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
 <h2 style="margin: 160px 0px 0px 0px;">View File: {{ file_name }}</h2>
 
-
 <div class="container">
     <div class="scrollable-table">
         <table>
             <thead>
                 <tr>
-                    <th>URL</th>
-                    <th>Time</th>
+                    <th>UNIT FILE</th>
+                    <th>STATE</th>
+                    <th>PRESET</th>
                 </tr>
             </thead>
             <tbody>
                 {% for entry in data %}
                     <tr>
-                        <td><div class="url-cell"><a href="{{ entry.url }}" target="_blank">{{ entry.url }}</a></div></td>
-                        <td>{{ entry.time }}</td>
+                        <td>{{ entry.UNIT_FILE }}</td>
+                        <td>{{ entry.STATE }}</td>
+                        <td>{{ entry.PRESET }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

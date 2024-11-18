@@ -149,6 +149,9 @@
     <a class="active" href="{{ url_for('firefox_history') }}">Firefox History</a>
     <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
     <a href="{{ url_for('bash_history') }}">Bash History</a>
+    <a href="{{ url_for('recently_used') }}">Recently Used</a>
+    <a href="{{ url_for('services') }}">Services</a>
+    <a href="{{ url_for('softwares') }}">Softwares</a>
     <a href="{{ url_for('about') }}">About</a>
 </div>
 
@@ -169,9 +172,34 @@
 
 
 
-   <form action="{{ url_for('update_firefox_history') }}" method="post">
-        <button type="submit">Get Data</button>
-    </form>
+	<form action="{{ url_for('update_firefox_history') }}" method="post">
+	    <div style="margin: 20px 0;">
+		<label for="entry_count">Number of entries:</label>
+		<select name="entry_count" id="entry_count" style="width: 100%; padding: 10px; background-color: #1F2739; border: none; border-radius: 5px; color: white; margin-bottom: 10px;">
+		    <option value="all" selected>All Entries</option>
+		    <option value="100">Last 100 Entries</option>
+		    <option value="custom">Custom Amount</option>
+		</select>
+				
+		<input type="number" name="custom_count" id="custom_count" 
+		       style="display: none; width: 98%; padding: 10px; background-color: #1F2739; border: none; border-radius: 5px; color: white; margin-bottom: 10px;" 
+		       placeholder="Enter number of entries">
+	    </div>
+	    <button type="submit">Get Data</button>
+	</form>
+
+	<script>
+	    document.getElementById('entry_count').addEventListener('change', function() {
+		var customInput = document.getElementById('custom_count');
+		if (this.value === 'custom') {
+		    customInput.style.display = 'block';
+		    customInput.required = true;
+		} else {
+		    customInput.style.display = 'none';
+		    customInput.required = false;
+		}
+	    });
+	</script>
 </div>
 
 <div class="flash-message" id="flash-message">

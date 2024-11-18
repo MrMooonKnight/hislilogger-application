@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>View File: {{ file_name }}</title>
     <style>
+   <style>
         @charset "UTF-8";
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 
@@ -37,6 +38,7 @@
             font-size: 3em;
             font-weight: 300;
             color: white;
+            text-align: center;
             margin-top: 80px;
         }
 
@@ -52,6 +54,7 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
         }
 
         .topnav a {
@@ -161,9 +164,9 @@
     <a href="{{ url_for('home') }}">Home</a>
     <a href="{{ url_for('device') }}">Device</a>
     <a href="{{ url_for('firefox_history') }}">Firefox History</a>
-    <a class="active" href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
+    <a href="{{ url_for('firefox_bookmarks') }}">Firefox Bookmarks</a>
     <a href="{{ url_for('bash_history') }}">Bash History</a>
-    <a href="{{ url_for('recently_used') }}">Recently Used</a>
+    <a class="active" href="{{ url_for('recently_used') }}">Recently Used</a>
     <a href="{{ url_for('services') }}">Services</a>
     <a href="{{ url_for('softwares') }}">Softwares</a>
     <a href="{{ url_for('about') }}">About</a>
@@ -172,20 +175,21 @@
 <h2 style="margin: 160px 0px 0px 0px;">View File: {{ file_name }}</h2>
 
 
+
 <div class="container">
     <div class="scrollable-table">
         <table>
             <thead>
                 <tr>
-                    <th>URL</th>
-                    <th>Time</th>
+                    <th>File</th>
+                    <th>Last Accessed</th>
                 </tr>
             </thead>
             <tbody>
                 {% for entry in data %}
                     <tr>
-                        <td><div class="url-cell"><a href="{{ entry.url }}" target="_blank">{{ entry.url }}</a></div></td>
-                        <td>{{ entry.time }}</td>
+                        <td><div class="url-cell"><a href="{{ entry.url }}" target="_blank">{{ entry.file }}</a></div></td>
+                        <td><div class="url-cell"><a href="{{ entry.url }}" target="_blank">{{ entry.last_accessed }}</a></div></td>
                     </tr>
                 {% endfor %}
             </tbody>
