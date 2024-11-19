@@ -1,3 +1,6 @@
+############################################################################################################################
+
+
 from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
 import subprocess
 import os
@@ -17,6 +20,7 @@ def home():
     return render_template('index.html')
 
 ############################################################################################################################
+
 @app.route('/firefox_history', methods=['GET'])
 def firefox_history():
     # Path to the directory containing the history files
@@ -227,7 +231,7 @@ def view_services(file_name):
     
     try:
         with open(file_path, 'r') as f:
-            data = json.load(f)  # Ensure this matches your JSON format
+            data = json.load(f)  
     except (FileNotFoundError, json.JSONDecodeError):
         flash(f"Failed to read or parse the file: {file_name}")
         data = []
@@ -278,22 +282,14 @@ def select_softwares():
 @app.route('/view_softwares/<file_name>')
 def view_softwares(file_name):
     try:
-        with open(f'application/data/softwares/{file_name}') as f:  # Added missing '/' in path
+        with open(f'application/data/softwares/{file_name}') as f: 
             data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         flash(f"Failed to load or parse the file: {file_name}")
         data = []
     return render_template('view_softwares.html', file_name=file_name, data=data)
 
-
-
-
-
 ############################################################################################################################
-
-
-
-
 
 @app.route('/recently_used', methods=['GET'])
 def recently_used():
@@ -309,7 +305,6 @@ def recently_used():
         flash(f"Directory {bash_dir} not found.")
     
     return render_template('recently_used.html', files=files)
-
 
 @app.route('/update_recently_used', methods=['POST'])
 def update_recently_used():
@@ -347,13 +342,7 @@ def view_recentlyUsed(file_name):
 
     return render_template('view_recentlyUsed.html', file_name=file_name, data=data)
 
-
-
-
-
-
-
-
+############################################################################################################################
 
 @app.route('/device')
 def device():
@@ -376,74 +365,6 @@ def device():
 
 ############################################################################################################################
 
-############################################################################################################################
-# @app.route('/recently_used', methods=['GET'])
-# def recently_used():
-#     # Path to the directory containing the recently used files data
-#     recently_used_dir = "application/data/recently_used"
-    
-#     try:
-#         print(f"Checking directory: {recently_used_dir}")  # Debug
-#         files = [f for f in os.listdir(recently_used_dir) if os.path.isfile(os.path.join(recently_used_dir, f))]
-#         print(f"Files found: {files}")  # Debug
-#     except FileNotFoundError:
-#         files = []
-#         flash(f"Directory {recently_used_dir} not found.")
-    
-#     return render_template('recently_used.html', files=files)
-
-
-# @app.route('/update_recently_used', methods=['POST'])
-# def update_recently_used():
-#     # Path to the script for extracting recently used files
-#     script_path = "application/getRecentlyUsed.py"
-    
-#     try:
-#         entry_count = request.form.get('entry_count')
-#         custom_count = request.form.get('custom_count')
-        
-#         if entry_count == 'custom' and custom_count:
-#             # Run script with custom entry count
-#             subprocess.run(["python3", script_path, custom_count], check=True)
-#         elif entry_count == '100':
-#             # Run script with 100 entries
-#             subprocess.run(["python3", script_path, "100"], check=True)
-#         else:
-#             # Default to all entries
-#             subprocess.run(["python3", script_path, "--all"], check=True)
-            
-#         flash("Recently used files have been updated successfully.")
-#     except subprocess.CalledProcessError as e:
-#         flash(f"An error occurred while running the script: {e}")
-#     except FileNotFoundError:
-#         flash(f"Script not found at {script_path}.")
-    
-#     return redirect(url_for('recently_used'))
-
-
-# @app.route('/select_recently_used', methods=['POST'])
-# def select_recently_used():
-#     selected_file = request.form['data_file']
-#     return redirect(url_for('view_recently_used', file_name=selected_file))
-
-
-# @app.route('/view_recently_used/<file_name>')
-# def view_recently_used(file_name):
-#     recently_used_dir = "application/data/recently_used"
-#     file_path = os.path.join(recently_used_dir, file_name)
-    
-#     try:
-#         with open(file_path, 'r') as f:
-#             data = json.load(f)
-#     except (FileNotFoundError, json.JSONDecodeError):
-#         flash(f"Failed to read or parse the file: {file_name}")
-#         data = []
-
-#     return render_template('view_recently_used.html', file_name=file_name, data=data)
-
-
-############################################################################################################################
-
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -455,3 +376,4 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 ############################################################################################################################
+
